@@ -1,1 +1,1 @@
-A V2Ray client for Android, support Xray core and v2fly core
+Flexible Android proxy client with Xray, Aether and advanced connection tools
