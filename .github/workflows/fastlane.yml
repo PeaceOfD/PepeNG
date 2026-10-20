@@ -5,7 +5,7 @@ on:
   push:
       branches: [ "pepeng-work", "main", "master" ]
   pull_request:
-      branches: [ "master" ]
+      branches: [ "pepeng-work", "main", "master" ]
 
 jobs:
   go:
