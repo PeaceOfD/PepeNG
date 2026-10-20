@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 37
         versionCode = 752
-        versionName = (project.findProperty("pattngVersion") as? String)?.takeIf { it.isNotBlank() } ?: "2.3.12"
+        versionName = (project.findProperty("pepengVersion") as? String)?.takeIf { it.isNotBlank() } ?: "2.3.12"
 
         val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
         splits {
@@ -92,7 +92,7 @@ android {
                 .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
                 .forEach { output ->
                     val abi = output.getFilter("ABI") ?: "universal"
-                    // PattNG: GitHub lists a release's files by name, and a version starts with a digit, which sorts
+                    // PepeNG: GitHub lists a release's files by name, and a version starts with a digit, which sorts
                     // before "fdroid": the F-Droid files come after the others. The app's update check finds its file
                     // by "fdroid" and the ABI anywhere in the name, see UpdateCheckerManager.getDownloadUrl.
                     output.outputFileName = "PepeNG_fdroid_${variant.versionName}_${abi}.apk"
