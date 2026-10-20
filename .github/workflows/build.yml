@@ -8,10 +8,12 @@ on:
         type: string
   push:
     branches:
+      - pepeng-work
+      - main
       - master
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -25,6 +27,7 @@ jobs:
       # aether/psiphon-build.sh and aether/pt-build.sh pin the programs themselves. Bump it when a
       # bumped aether submodule pins a program that asks for a newer line.
       GO_VERSION: "1.26"
+      BUILD_TYPE: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag != '' && 'release' || 'debug' }}
 
     steps:
     - name: Checkout code
@@ -179,6 +182,7 @@ jobs:
         java-version: '21'
 
     - name: Decode Keystore
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag != '' }}
       uses: timheuer/base64-to-file@v2.0.0
       id: android_keystore
       with:
@@ -190,18 +194,21 @@ jobs:
         cd ${{ github.workspace }}/V2rayNG
         echo "sdk.dir=${ANDROID_HOME}" > local.properties
         chmod 755 gradlew
-        # The JVM unit tests are the only automated check of the Kotlin logic; a failure stops the
-        # build before anything is assembled or signed.
+        # Run unit tests for every push and before release assembly.
         ./gradlew :app:testPlaystoreDebugUnitTest
-        ./gradlew licenseFdroidReleaseReport
-        ./gradlew assembleRelease -PpepengVersion="${{ inputs.release_tag }}" -Pandroid.injected.signing.store.file=${{ steps.android_keystore.outputs.filePath }} -Pandroid.injected.signing.store.password=${{ secrets.APP_KEYSTORE_PASSWORD }} -Pandroid.injected.signing.key.alias=${{ secrets.APP_KEYSTORE_ALIAS }} -Pandroid.injected.signing.key.password=${{ secrets.APP_KEY_PASSWORD }}
-    
+        if [ -n "${{ inputs.release_tag }}" ]; then
+          ./gradlew licenseFdroidReleaseReport
+          ./gradlew assembleRelease -PpepengVersion="${{ inputs.release_tag }}" -Pandroid.injected.signing.store.file=${{ steps.android_keystore.outputs.filePath }} -Pandroid.injected.signing.store.password=${{ secrets.APP_KEYSTORE_PASSWORD }} -Pandroid.injected.signing.key.alias=${{ secrets.APP_KEYSTORE_ALIAS }} -Pandroid.injected.signing.key.password=${{ secrets.APP_KEY_PASSWORD }}
+        else
+          ./gradlew :app:assemblePlaystoreDebug
+        fi
+
     - name: Check the native libraries in the APKs
       run: |
         # Looked into as ZIP files: every ABI the Aether core is built for has to carry the core, its
         # Psiphon client and its pluggable transport, and each APK's native files are listed for the record.
         status=0
-        for apk in ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*.apk; do
+        for apk in ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/${BUILD_TYPE}/*.apk; do
           entries=$(unzip -Z1 "$apk" | grep '^lib/' || true)
           echo "$(basename "$apk"):"
           echo "$entries" | sed 's/^/  /'
@@ -222,31 +229,33 @@ jobs:
       if: ${{  success() }}
       with:
         name: arm64-v8a
-        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*arm64-v8a*.apk
+        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/${{ env.BUILD_TYPE }}/*arm64-v8a*.apk
 
     - name: Upload armeabi-v7a APK
       uses: actions/upload-artifact@v7
       if: ${{  success() }}
       with:
         name: armeabi-v7a
-        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*armeabi-v7a*.apk
+        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/${{ env.BUILD_TYPE }}/*armeabi-v7a*.apk
 
     - name: Upload x86 APK
       uses: actions/upload-artifact@v7
       if: ${{  success() }}
       with:
         name: x86-apk
-        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*x86*.apk
+        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/${{ env.BUILD_TYPE }}/*x86*.apk
 
     - name: Upload universal APK
       uses: actions/upload-artifact@v7
       if: ${{ success() }}
       with:
         name: universal-apk
-        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*universal*.apk
+        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/${{ env.BUILD_TYPE }}/*universal*.apk
 
   sign-and-release:
     needs: build
+    permissions:
+      contents: write
     runs-on: ubuntu-26.04
     if: github.event_name == 'workflow_dispatch' && inputs.release_tag != ''
 
