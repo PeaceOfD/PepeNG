@@ -64,10 +64,10 @@ object AppConfig {
     const val PREF_SOCKS_PASSWORD = "pref_socks_password"
     const val PREF_SOCKS_ENABLE_UDP = "pref_socks_enable_udp"
 
-    /** PattNG: the loopback port every Aether core listens on, whatever its profile; see SettingsManager.getAetherListenPort. */
+    /** PepeNG: the loopback port every Aether core listens on, whatever its profile; see SettingsManager.getAetherListenPort. */
     const val PREF_AETHER_LISTEN_PORT = "pref_aether_listen_port"
 
-    /** PattNG: the settings of the page that gets new WARP keys, which no profile shares; see AetherKeysSettings. */
+    /** PepeNG: the settings of the page that gets new WARP keys, which no profile shares; see AetherKeysSettings. */
     const val PREF_AETHER_KEYS_KIND = "pref_aether_keys_kind"
     const val PREF_AETHER_KEYS_ENROLL_ADDRESS = "pref_aether_keys_enroll_address"
     const val PREF_AETHER_KEYS_FRAGMENT = "pref_aether_keys_fragment"
@@ -136,7 +136,7 @@ object AppConfig {
     const val TAG_BALANCER = "balancer-main"
     const val TAG_BALANCER_PRE = "balancer"
 
-    /** PattNG: the inbound the Aether core dials out through, and the outbound its traffic leaves Xray by. */
+    /** PepeNG: the inbound the Aether core dials out through, and the outbound its traffic leaves Xray by. */
     const val TAG_SECONDARY_SOCKS = "secondary-socks"
     const val TAG_EXIT_NODE = "exit-node"
 
@@ -154,8 +154,6 @@ object AppConfig {
     const val APP_ISSUES_URL = "$APP_URL/issues"
     const val AETHER_URL = "$GITHUB_URL/CluvexStudio/aether"
     const val APP_WIKI_MODE = "$APP_URL/wiki/Mode"
-    const val APP_PRIVACY_POLICY = "$GITHUB_RAW_URL/2dust/v2rayNG/master/CR.md"
-    const val TG_CHANNEL_URL = "https://t.me/github_2dust"
     const val DELAY_TEST_URL = "https://www.gstatic.com/generate_204"
     const val DELAY_TEST_URL2 = "https://www.google.com/generate_204"
     const val OBSERVATORY_LEAST_PING_INTERVAL = "3m"
@@ -194,17 +192,17 @@ object AppConfig {
     const val PORT_SOCKS = "10808"
     const val PORT_AETHER_SOCKS = "10819"
 
-    /** PattNG: where the Aether core asks for the ECH key, and the domain whose key it takes, unless a profile names others. */
+    /** PepeNG: where the Aether core asks for the ECH key, and the domain whose key it takes, unless a profile names others. */
     const val AETHER_ECH_DNS = "udp://1.1.1.1"
     const val AETHER_ECH_DOMAIN = "cloudflare-ech.com"
 
     /**
-     * PattNG: the server name the MASQUE handshakes of the Aether core put in their ClientHello, unless a profile names
+     * PepeNG: the server name the MASQUE handshakes of the Aether core put in their ClientHello, unless a profile names
      * another; the core's own default as well. The HTTP host of the CONNECT request stays the core's.
      */
     const val AETHER_MASQUE_SNI = "www.cloudflare.com"
 
-    /** PattNG: where the Aether core sends the calls to the WARP API, which register and enroll the keys, unless told otherwise. */
+    /** PepeNG: where the Aether core sends the calls to the WARP API, which register and enroll the keys, unless told otherwise. */
     const val AETHER_ENROLL_ADDRESS = "api.cloudflareclient.com"
 
     const val WIREGUARD_LOCAL_ADDRESS_V4 = "172.16.0.2/32"
